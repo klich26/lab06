@@ -12,8 +12,8 @@ set(PRINT_VERSION_MINOR 1)
 set(PRINT_VERSION_PATCH 0)
 set(PRINT_VERSION_TWEAK 0)
 set(PRINT_VERSION
-  ${PRINT_VERSION_MAJOR}.${PRINT_VERSION_MINOR}.${PRINT_VERSION_PATCH}.${PRINT_VERSION_TWEAK})
- set(PRINT_VERSION_STRING "v${PRINT_VERSION}")
+${PRINT_VERSION_MAJOR}.${PRINT_VERSION_MINOR}.${PRINT_VERSION_PATCH}.${PRINT_VERSION_TWEAK})
+set(PRINT_VERSION_STRING "v${PRINT_VERSION}")
 
 add_library(print STATIC ${CMAKE_CURRENT_SOURCE_DIR}/sources/print.cpp)
 
@@ -42,16 +42,14 @@ install(TARGETS print
 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/ DESTINATION include)
 install(EXPORT print-config DESTINATION cmake)
+
 if(BUILD_TESTS)
   enable_testing()
- if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-   add_compile_options(-Wno-error=maybe-uninitialized)
-endif()
   add_subdirectory(third-party/gtest)
   file(GLOB ${PROJECT_NAME}_TEST_SOURCES tests/*.cpp)
   add_executable(check ${${PROJECT_NAME}_TEST_SOURCES})
- 
- target_link_libraries(check ${PROJECT_NAME} gtest_main)
-
-	add_test(NAME check COMMAND check)
+  target_link_libraries(check ${PROJECT_NAME} gtest_main)
+  add_test(NAME check COMMAND check)
 endif()
+
+include(CPackConfig.cmake)
