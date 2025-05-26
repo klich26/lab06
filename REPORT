@@ -1,0 +1,349 @@
+$git clone https://github.com/${GITHUB_USERNAME}/lab05 projects/lab06
+$ cd projects/lab06
+$ git remote remove origin
+$ git remote add origin https://github.com/${GITHUB_USERNAME}/lab06
+
+
+$ gsed -i '/project(print)/a\
+set(PRINT_VERSION_STRING "v\${PRINT_VERSION}")
+' CMakeLists.txt
+$ gsed -i '/project(print)/a\
+set(PRINT_VERSION\
+  \${PRINT_VERSION_MAJOR}.\${PRINT_VERSION_MINOR}.\${PRINT_VERSION_PATCH}.\${PRINT_VERSION_TWEAK})
+' CMakeLists.txt
+$ gsed -i '/project(print)/a\
+set(PRINT_VERSION_TWEAK 0)
+' CMakeLists.txt
+$ gsed -i '/project(print)/a\
+set(PRINT_VERSION_PATCH 0)
+' CMakeLists.txt
+$ gsed -i '/project(print)/a\
+set(PRINT_VERSION_MINOR 1)
+' CMakeLists.txt
+$ gsed -i '/project(print)/a\
+set(PRINT_VERSION_MAJOR 0)
+' CMakeLists.txt
+$ git diff
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 44cabd9..0388d06 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -7,6 +7,13 @@ option(BUILD_EXAMPLES "Build examples" OFF)
+ option(BUILD_TESTS "Build tests" OFF)
+ 
+ project(print)
++set(PRINT_VERSION_MAJOR 0)
++set(PRINT_VERSION_MINOR 1)
++set(PRINT_VERSION_PATCH 0)
++set(PRINT_VERSION_TWEAK 0)
++set(PRINT_VERSION
++  ${PRINT_VERSION_MAJOR}.${PRINT_VERSION_MINOR}.${PRINT_VERSION_PATCH}.${PRINT_VERSION_TWEAK})
++ set(PRINT_VERSION_STRING "v${PRINT_VERSION}")
+ 
+ add_library(print STATIC ${CMAKE_CURRENT_SOURCE_DIR}/sources/print.cpp)
+
+$ touch DESCRIPTION && edit DESCRIPTION
+$ touch ChangeLog.md
+$ export DATE="`LANG=en_US date +'%a %b %d %Y'`"
+$ cat > ChangeLog.md <<EOF
+* ${DATE} ${GITHUB_USERNAME} <${GITHUB_EMAIL}> 0.1.0.0
+- Initial RPM release
+EOF
+
+
+
+$ cat > CPackConfig.cmake <<EOF
+include(InstallRequiredSystemLibraries)
+EOF
+
+$ cat >> CPackConfig.cmake <<EOF
+set(CPACK_PACKAGE_CONTACT ${GITHUB_EMAIL})
+set(CPACK_PACKAGE_VERSION_MAJOR \${PRINT_VERSION_MAJOR})
+set(CPACK_PACKAGE_VERSION_MINOR \${PRINT_VERSION_MINOR})
+set(CPACK_PACKAGE_VERSION_PATCH \${PRINT_VERSION_PATCH})
+set(CPACK_PACKAGE_VERSION_TWEAK \${PRINT_VERSION_TWEAK})
+set(CPACK_PACKAGE_VERSION \${PRINT_VERSION})
+set(CPACK_PACKAGE_DESCRIPTION_FILE \${CMAKE_CURRENT_SOURCE_DIR}/DESCRIPTION)
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "static C++ library for printing")
+EOF
+
+$ cat >> CPackConfig.cmake <<EOF
+
+set(CPACK_RESOURCE_FILE_LICENSE \${CMAKE_CURRENT_SOURCE_DIR}/LICENSE)
+set(CPACK_RESOURCE_FILE_README \${CMAKE_CURRENT_SOURCE_DIR}/README.md)
+EOF
+
+
+$ cat >> CPackConfig.cmake <<EOF
+
+set(CPACK_RPM_PACKAGE_NAME "print-devel")
+set(CPACK_RPM_PACKAGE_LICENSE "MIT")
+set(CPACK_RPM_PACKAGE_GROUP "print")
+set(CPACK_RPM_CHANGELOG_FILE \${CMAKE_CURRENT_SOURCE_DIR}/ChangeLog.md)
+set(CPACK_RPM_PACKAGE_RELEASE 1)
+EOF
+
+
+$ cat >> CPackConfig.cmake <<EOF
+
+set(CPACK_DEBIAN_PACKAGE_NAME "libprint-dev")
+set(CPACK_DEBIAN_PACKAGE_PREDEPENDS "cmake >= 3.0")
+set(CPACK_DEBIAN_PACKAGE_RELEASE 1)
+EOF
+
+$ cat >> CPackConfig.cmake <<EOF
+
+include(CPack)
+EOF
+
+$ cat >> CMakeLists.txt <<EOF
+
+include(CPackConfig.cmake)
+EOF
+
+$ gsed -i 's/lab05/lab06/g' README.md
+
+
+$git add .
+
+git commit -m"added cpack config 2"
+[main d53c453] added cpack config 2
+ 176 files changed, 162 insertions(+), 8943 deletions(-)
+ delete mode 100644 .github/workflows/CI.yml
+ delete mode 100644 _build/CMakeFiles/check.dir/DependInfo.cmake
+ delete mode 100644 _build/CMakeFiles/check.dir/build.make
+ delete mode 100644 _build/CMakeFiles/check.dir/cmake_clean.cmake
+ delete mode 100644 _build/CMakeFiles/check.dir/compiler_depend.make
+ delete mode 100644 _build/CMakeFiles/check.dir/compiler_depend.ts
+ delete mode 100644 _build/CMakeFiles/check.dir/depend.make
+ delete mode 100644 _build/CMakeFiles/check.dir/flags.make
+ delete mode 100644 _build/CMakeFiles/check.dir/link.txt
+ delete mode 100644 _build/CMakeFiles/check.dir/progress.make
+ delete mode 100644 _build/CMakeFiles/check.dir/tests/test1.cpp.o
+ delete mode 100644 _build/CMakeFiles/check.dir/tests/test1.cpp.o.d
+ delete mode 100644 _build/CMakeFiles/print.dir/compiler_depend.internal
+ delete mode 100644 _build/CTestTestfile.cmake
+ delete mode 100644 _build/Testing/Temporary/CTestCostData.txt
+ delete mode 100644 _build/Testing/Temporary/LastTest.log
+ delete mode 100644 _build/Testing/Temporary/LastTestsFailed.log
+ delete mode 100755 _build/check
+ delete mode 100644 _build/file.txt
+ delete mode 100644 _build/third-party/gtest/CMakeFiles/CMakeDirectoryInformation.cmake
+ delete mode 100644 _build/third-party/gtest/CMakeFiles/progress.marks
+ delete mode 100644 _build/third-party/gtest/CTestTestfile.cmake
+ delete mode 100644 _build/third-party/gtest/Makefile
+ delete mode 100644 _build/third-party/gtest/cmake_install.cmake
+ delete mode 100644 _build/third-party/gtest/googlemock/CMakeFiles/CMakeDirectoryInformation.cmake
+ delete mode 100644 _build/third-party/gtest/googlemock/CMakeFiles/gmock.dir/DependInfo.cmake
+ delete mode 100644 _build/third-party/gtest/googlemock/CMakeFiles/gmock.dir/build.make
+ delete mode 100644 _build/third-party/gtest/googlemock/CMakeFiles/gmock.dir/cmake_clean.cmake
+ delete mode 100644 _build/third-party/gtest/googlemock/CMakeFiles/gmock.dir/cmake_clean_target.cmake
+ delete mode 100644 _build/third-party/gtest/googlemock/CMakeFiles/gmock.dir/compiler_depend.make
+ delete mode 100644 _build/third-party/gtest/googlemock/CMakeFiles/gmock.dir/compiler_depend.ts
+ delete mode 100644 _build/third-party/gtest/googlemock/CMakeFiles/gmock.dir/depend.make
+ delete mode 100644 _build/third-party/gtest/googlemock/CMakeFiles/gmock.dir/flags.make
+ delete mode 100644 _build/third-party/gtest/googlemock/CMakeFiles/gmock.dir/link.txt
+ delete mode 100644 _build/third-party/gtest/googlemock/CMakeFiles/gmock.dir/progress.make
+ delete mode 100644 _build/third-party/gtest/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o
+ delete mode 100644 _build/third-party/gtest/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o.d
+ delete mode 100644 _build/third-party/gtest/googlemock/CMakeFiles/gmock_main.dir/DependInfo.cmake
+ delete mode 100644 _build/third-party/gtest/googlemock/CMakeFiles/gmock_main.dir/build.make
+ delete mode 100644 _build/third-party/gtest/googlemock/CMakeFiles/gmock_main.dir/cmake_clean.cmake
+ delete mode 100644 _build/third-party/gtest/googlemock/CMakeFiles/gmock_main.dir/cmake_clean_target.cmake
+ delete mode 100644 _build/third-party/gtest/googlemock/CMakeFiles/gmock_main.dir/compiler_depend.make
+ delete mode 100644 _build/third-party/gtest/googlemock/CMakeFiles/gmock_main.dir/compiler_depend.ts
+ delete mode 100644 _build/third-party/gtest/googlemock/CMakeFiles/gmock_main.dir/depend.make
+ delete mode 100644 _build/third-party/gtest/googlemock/CMakeFiles/gmock_main.dir/flags.make
+ delete mode 100644 _build/third-party/gtest/googlemock/CMakeFiles/gmock_main.dir/link.txt
+ delete mode 100644 _build/third-party/gtest/googlemock/CMakeFiles/gmock_main.dir/progress.make
+ delete mode 100644 _build/third-party/gtest/googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o
+ delete mode 100644 _build/third-party/gtest/googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o.d
+ delete mode 100644 _build/third-party/gtest/googlemock/CMakeFiles/progress.marks
+ delete mode 100644 _build/third-party/gtest/googlemock/CTestTestfile.cmake
+ delete mode 100644 _build/third-party/gtest/googlemock/Makefile
+ delete mode 100644 _build/third-party/gtest/googlemock/cmake_install.cmake
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/CMakeFiles/CMakeDirectoryInformation.cmake
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/CMakeFiles/Export/0c08b8e77dd885bfe55a19a9659d9fc1/GTestTargets-noconfig.cmake
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/CMakeFiles/Export/0c08b8e77dd885bfe55a19a9659d9fc1/GTestTargets.cmake
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/CMakeFiles/gtest.dir/DependInfo.cmake
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/CMakeFiles/gtest.dir/build.make
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/CMakeFiles/gtest.dir/cmake_clean.cmake
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/CMakeFiles/gtest.dir/cmake_clean_target.cmake
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/CMakeFiles/gtest.dir/compiler_depend.internal
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/CMakeFiles/gtest.dir/compiler_depend.make
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/CMakeFiles/gtest.dir/compiler_depend.ts
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/CMakeFiles/gtest.dir/depend.make
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/CMakeFiles/gtest.dir/flags.make
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/CMakeFiles/gtest.dir/link.txt
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/CMakeFiles/gtest.dir/progress.make
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/CMakeFiles/gtest.dir/src/gtest-all.cc.o
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/CMakeFiles/gtest.dir/src/gtest-all.cc.o.d
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/DependInfo.cmake
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/build.make
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/cmake_clean.cmake
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/cmake_clean_target.cmake
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/compiler_depend.make
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/compiler_depend.ts
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/depend.make
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/flags.make
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/link.txt
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/progress.make
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o.d
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/CMakeFiles/progress.marks
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/CTestTestfile.cmake
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/Makefile
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/cmake_install.cmake
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/generated/GTestConfig.cmake
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/generated/GTestConfigVersion.cmake
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/generated/gmock.pc
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/generated/gmock_main.pc
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/generated/gtest.pc
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/generated/gtest_main.pc
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/libgtest.a
+ delete mode 100644 _build/third-party/gtest/googlemock/gtest/libgtest_main.a
+ delete mode 100644 _build/third-party/gtest/googlemock/libgmock.a
+ delete mode 100644 _build/third-party/gtest/googlemock/libgmock_main.a
+ delete mode 100644 _build/thrid-party/gtest/CMakeFiles/CMakeDirectoryInformation.cmake
+ delete mode 100644 _build/thrid-party/gtest/CMakeFiles/progress.marks
+ delete mode 100644 _build/thrid-party/gtest/CTestTestfile.cmake
+ delete mode 100644 _build/thrid-party/gtest/Makefile
+ delete mode 100644 _build/thrid-party/gtest/cmake_install.cmake
+ delete mode 100644 _build/thrid-party/gtest/googlemock/CMakeFiles/CMakeDirectoryInformation.cmake
+ delete mode 100644 _build/thrid-party/gtest/googlemock/CMakeFiles/gmock.dir/DependInfo.cmake
+ delete mode 100644 _build/thrid-party/gtest/googlemock/CMakeFiles/gmock.dir/build.make
+ delete mode 100644 _build/thrid-party/gtest/googlemock/CMakeFiles/gmock.dir/cmake_clean.cmake
+ delete mode 100644 _build/thrid-party/gtest/googlemock/CMakeFiles/gmock.dir/cmake_clean_target.cmake
+ delete mode 100644 _build/thrid-party/gtest/googlemock/CMakeFiles/gmock.dir/compiler_depend.make
+ delete mode 100644 _build/thrid-party/gtest/googlemock/CMakeFiles/gmock.dir/compiler_depend.ts
+ delete mode 100644 _build/thrid-party/gtest/googlemock/CMakeFiles/gmock.dir/depend.make
+ delete mode 100644 _build/thrid-party/gtest/googlemock/CMakeFiles/gmock.dir/flags.make
+ delete mode 100644 _build/thrid-party/gtest/googlemock/CMakeFiles/gmock.dir/link.txt
+ delete mode 100644 _build/thrid-party/gtest/googlemock/CMakeFiles/gmock.dir/progress.make
+ delete mode 100644 _build/thrid-party/gtest/googlemock/CMakeFiles/gmock_main.dir/DependInfo.cmake
+ delete mode 100644 _build/thrid-party/gtest/googlemock/CMakeFiles/gmock_main.dir/build.make
+ delete mode 100644 _build/thrid-party/gtest/googlemock/CMakeFiles/gmock_main.dir/cmake_clean.cmake
+ delete mode 100644 _build/thrid-party/gtest/googlemock/CMakeFiles/gmock_main.dir/cmake_clean_target.cmake
+ delete mode 100644 _build/thrid-party/gtest/googlemock/CMakeFiles/gmock_main.dir/compiler_depend.make
+ delete mode 100644 _build/thrid-party/gtest/googlemock/CMakeFiles/gmock_main.dir/compiler_depend.ts
+ delete mode 100644 _build/thrid-party/gtest/googlemock/CMakeFiles/gmock_main.dir/depend.make
+ delete mode 100644 _build/thrid-party/gtest/googlemock/CMakeFiles/gmock_main.dir/flags.make
+ delete mode 100644 _build/thrid-party/gtest/googlemock/CMakeFiles/gmock_main.dir/link.txt
+ delete mode 100644 _build/thrid-party/gtest/googlemock/CMakeFiles/gmock_main.dir/progress.make
+ delete mode 100644 _build/thrid-party/gtest/googlemock/CMakeFiles/progress.marks
+ delete mode 100644 _build/thrid-party/gtest/googlemock/CTestTestfile.cmake
+ delete mode 100644 _build/thrid-party/gtest/googlemock/Makefile
+ delete mode 100644 _build/thrid-party/gtest/googlemock/cmake_install.cmake
+ delete mode 100644 _build/thrid-party/gtest/googlemock/gtest/CMakeFiles/CMakeDirectoryInformation.cmake
+ delete mode 100644 _build/thrid-party/gtest/googlemock/gtest/CMakeFiles/Export/0c08b8e77dd885bfe55a19a9659d9fc1/GTestTargets-noconfig.cmake
+ delete mode 100644 _build/thrid-party/gtest/googlemock/gtest/CMakeFiles/Export/0c08b8e77dd885bfe55a19a9659d9fc1/GTestTargets.cmake
+ delete mode 100644 _build/thrid-party/gtest/googlemock/gtest/CMakeFiles/gtest.dir/DependInfo.cmake
+ delete mode 100644 _build/thrid-party/gtest/googlemock/gtest/CMakeFiles/gtest.dir/build.make
+ delete mode 100644 _build/thrid-party/gtest/googlemock/gtest/CMakeFiles/gtest.dir/cmake_clean.cmake
+ delete mode 100644 _build/thrid-party/gtest/googlemock/gtest/CMakeFiles/gtest.dir/cmake_clean_target.cmake
+ delete mode 100644 _build/thrid-party/gtest/googlemock/gtest/CMakeFiles/gtest.dir/compiler_depend.make
+ delete mode 100644 _build/thrid-party/gtest/googlemock/gtest/CMakeFiles/gtest.dir/compiler_depend.ts
+ delete mode 100644 _build/thrid-party/gtest/googlemock/gtest/CMakeFiles/gtest.dir/depend.make
+ delete mode 100644 _build/thrid-party/gtest/googlemock/gtest/CMakeFiles/gtest.dir/flags.make
+ delete mode 100644 _build/thrid-party/gtest/googlemock/gtest/CMakeFiles/gtest.dir/link.txt
+ delete mode 100644 _build/thrid-party/gtest/googlemock/gtest/CMakeFiles/gtest.dir/progress.make
+ delete mode 100644 _build/thrid-party/gtest/googlemock/gtest/CMakeFiles/gtest.dir/src/gtest-all.cc.o.d
+ delete mode 100644 _build/thrid-party/gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/DependInfo.cmake
+ delete mode 100644 _build/thrid-party/gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/build.make
+ delete mode 100644 _build/thrid-party/gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/cmake_clean.cmake
+ delete mode 100644 _build/thrid-party/gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/cmake_clean_target.cmake
+ delete mode 100644 _build/thrid-party/gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/compiler_depend.make
+ delete mode 100644 _build/thrid-party/gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/compiler_depend.ts
+ delete mode 100644 _build/thrid-party/gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/depend.make
+ delete mode 100644 _build/thrid-party/gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/flags.make
+ delete mode 100644 _build/thrid-party/gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/link.txt
+ delete mode 100644 _build/thrid-party/gtest/googlemock/gtest/CMakeFiles/gtest_main.dir/progress.make
+ delete mode 100644 _build/thrid-party/gtest/googlemock/gtest/CMakeFiles/progress.marks
+ delete mode 100644 _build/thrid-party/gtest/googlemock/gtest/CTestTestfile.cmake
+ delete mode 100644 _build/thrid-party/gtest/googlemock/gtest/Makefile
+ delete mode 100644 _build/thrid-party/gtest/googlemock/gtest/cmake_install.cmake
+ delete mode 100644 _build/thrid-party/gtest/googlemock/gtest/generated/GTestConfig.cmake
+ delete mode 100644 _build/thrid-party/gtest/googlemock/gtest/generated/GTestConfigVersion.cmake
+ delete mode 100644 _build/thrid-party/gtest/googlemock/gtest/generated/gmock.pc
+ delete mode 100644 _build/thrid-party/gtest/googlemock/gtest/generated/gmock_main.pc
+ delete mode 100644 _build/thrid-party/gtest/googlemock/gtest/generated/gtest.pc
+ delete mode 100644 _build/thrid-party/gtest/googlemock/gtest/generated/gtest_main.pc
+
+
+$git tag v0.1.0.0
+
+$git push origin main --tags
+Username for 'https://github.com': klich26
+Password for 'https://klich26@github.com': 
+Enumerating objects: 45, done.
+Counting objects: 100% (45/45), done.
+Delta compression using up to 16 threads
+Compressing objects: 100% (21/21), done.
+Writing objects: 100% (23/23), 3.30 KiB | 482.00 KiB/s, done.
+Total 23 (delta 16), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (16/16), completed with 16 local objects.
+To https://github.com/klich26/lab06.git
+   a52808a..d53c453  main -> main
+
+
+$cmake -H. -B_build
+CMake Deprecation Warning at CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+-- Configuring done (0.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: /klich26/workspace/projects/lab06/_build
+
+$cmake --build _build/
+[100%] Built target print
+$cd _build/
+
+$cpack -G "TGZ"
+CPack: Create package using TGZ
+CPack: Install projects
+CPack: - Run preinstall target for: print
+CPack: - Install project: print []
+CPack: Create package
+CPack: - package: /klich26/workspace/projects/lab06/_build/print-0.1.0.0-Linux.tar.gz generated.
+$cd ..
+
+$cmake -H. -B_build -DCPACK_GENERATOR="TGZ"
+CMake Deprecation Warning at CMakeLists.txt:1 (cmake_minimum_required):
+  Compatibility with CMake < 3.5 will be removed from a future version of
+  CMake.
+
+  Update the VERSION argument <min> value or use a ...<max> suffix to tell
+  CMake that the project does not need compatibility with older versions.
+
+
+-- Configuring done (0.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: /klich26/workspace/projects/lab06/_build
+
+$cmake --build _build --target package
+[100%] Built target print
+Run CPack packaging tool...
+CPack: Create package using TGZ
+CPack: Install projects
+CPack: - Run preinstall target for: print
+CPack: - Install project: print []
+CPack: Create package
+CPack: - package: /klich26/workspace/projects/lab06/_build/print-0.1.0.0-Linux.tar.gz generated.
+
+$mkdir artifacts
+
+$mv _build/*.tar.gz artifacts/
+
+
+$tree artifacts/
+artifacts/
+└── print-0.1.0.0-Linux.tar.gz
+
+1 directory, 1 file
+
